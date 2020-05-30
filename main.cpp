@@ -3,6 +3,7 @@
 #include <sstream>
 #include <cassert>
 #include <map>
+
 using namespace std;
 
 /*Реализуйте структуру данных типа “множество строк” на основе динамической хеш-таблицы с открытой адресацией.
@@ -29,40 +30,37 @@ public:
 
     // Вставка ключа в хеш-таблицу
     bool insert(const string &str) {
-        if(str.empty() || isNil(str) || isDeleted(str))
+        if (str.empty() || isNil(str) || isDeleted(str))
             return false;
-
         if (float(size) / float(capacity) >= 0.75)
             resize();
 
         int h = h1(str);
-        int insertPos=-1;
+        int insertPos = -1;
         for (int i = 0; i < capacity; ++i) {
             h = hash(str, i, h);
-            //проверка на то, есть ли уже такой элемент
-            if(buffer[h]==str){
+            if (buffer[h] == str)
                 return false;
-            }
-            //вставка
             if (isNil(buffer[h])) {
+                insertPos = insertPos==-1? h: insertPos;
+                size++;
+                buffer[insertPos] = str;
+                return true;
+            }
+            if (isDeleted(buffer[h])) {
+                insertPos = h;
+            } else if (insertPos != -1) {
+                //если дошли до обычного узла, а ранее был удаленный, то вставляем эленмент
                 size++;
                 buffer[h] = str;
                 return true;
             }
-            if(isDeleted(buffer[h])){
-                insertPos = h;
-            }
-        }
-        if(insertPos!=-1){
-            size++;
-            buffer[insertPos] = str;
-            return true;
         }
         return false;
     }
 
     bool deleteElement(const string &str) {
-        if(str.empty() || isNil(str) || isDeleted(str))
+        if (str.empty() || isNil(str) || isDeleted(str))
             return false;
 
         int h = h1(str);
@@ -82,7 +80,7 @@ public:
     }
 
     bool hasElement(const string &str) {
-        if(str.empty() || isNil(str) || isDeleted(str))
+        if (str.empty() || isNil(str) || isDeleted(str))
             return false;
         int h = h1(str);
         for (int i = 0; i < capacity; ++i) {
@@ -113,8 +111,6 @@ private:
             hash = (hash * p + int(i)) % capacity;
         return hash;
     }
-
-
 
 
     int hash(const string &str, int i, int prevHash) {
@@ -171,24 +167,23 @@ void run(std::istream &in, std::ostream &out) {
         switch (ch[0]) {
             case '+': {
                 res = h.insert(word);
-                out<<(res?"OK":"FAIL")<<endl;
+                out << (res ? "OK" : "FAIL") << endl;
                 break;
             }
             case '-': {
                 res = h.deleteElement(word);
-                out<<(res?"OK":"FAIL")<<endl;
+                out << (res ? "OK" : "FAIL") << endl;
                 break;
             }
             case '?': {
                 res = h.hasElement(word);
-                out<<(res?"OK":"FAIL")<<endl;
+                out << (res ? "OK" : "FAIL") << endl;
                 break;
             }
         }
         getline(in, str);
     }
 }
-
 
 
 int main() {
