@@ -36,6 +36,7 @@ public:
             resize();
 
         int h = h1(str);
+        int insertPos=-1;
         for (int i = 0; i < capacity; ++i) {
             h = hash(str, i, h);
             //проверка на то, есть ли уже такой элемент
@@ -43,11 +44,19 @@ public:
                 return false;
             }
             //вставка
-            if (isNil(buffer[h]) || isDeleted(buffer[h])) {
+            if (isNil(buffer[h])) {
                 size++;
                 buffer[h] = str;
                 return true;
             }
+            if(isDeleted(buffer[h])){
+                insertPos = h;
+            }
+        }
+        if(insertPos!=-1){
+            size++;
+            buffer[insertPos] = str;
+            return true;
         }
         return false;
     }
@@ -186,18 +195,3 @@ int main() {
     run(cin, cout);
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
