@@ -42,19 +42,20 @@ public:
             if (buffer[h] == str)
                 return false;
             if (isNil(buffer[h])) {
-                insertPos = insertPos==-1? h: insertPos;
+                insertPos = insertPos == -1 ? h : insertPos;
                 size++;
                 buffer[insertPos] = str;
                 return true;
             }
-            if (isDeleted(buffer[h])) {
+            if (isDeleted(buffer[h])&&insertPos==-1) {
                 insertPos = h;
-            } else if (insertPos != -1) {
-                //если дошли до обычного узла, а ранее был удаленный, то вставляем эленмент
-                size++;
-                buffer[h] = str;
-                return true;
             }
+        }
+
+        if (insertPos != -1) {
+            size++;
+            buffer[insertPos] = str;
+            return true;
         }
         return false;
     }
